@@ -5,7 +5,7 @@ import { ApiError } from './utils/apiError.js'
 import cors from 'cors';
 app.use(cors(
     {
-        origin: ['http://localhost:5173','https://xzq1pm1p-5173.inc1.devtunnels.ms'],
+        origin: ['http://localhost:5173','https://uber-red-delta.vercel.app'],
         // origin: '*', // Allow all origins for development, restrict in production
         credentials: true
     }
