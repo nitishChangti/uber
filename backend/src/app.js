@@ -1,7 +1,7 @@
 import express from 'express';
 const app = express();
 
-import { ApiError } from './utils/apiError.js'
+import {ApiError} from './utils/ApiError.js'
 import cors from 'cors';
 app.use(cors(
     {
