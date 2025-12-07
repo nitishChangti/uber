@@ -65,7 +65,7 @@ const LocationSearchPanel = ({
         try {
             const accessToken = JSON.parse(localStorage.getItem('accessToken'));
              const response = await axios.get(
-            `${import.meta.VITE_BASE_URL}/maps/get-suggestions?input=${encodeURIComponent(input)}`,
+            `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions?input=${encodeURIComponent(input)}`,
             {
              headers: {
                Authorization: `Bearer ${accessToken}`,

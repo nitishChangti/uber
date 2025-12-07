@@ -21,7 +21,7 @@ const socketSlice = createSlice({
 export const { setConnected, setDisconnected } = socketSlice.actions;
 
 // ✅ Connect to Socket.IO server
-export const connectSocket = (url = `${import.meta.VITE_BASE_URL}`, token
+export const connectSocket = (url = `${import.meta.env.VITE_BASE_URL}`, token
 ) => (dispatch) => {
   if (!socket) {
     console.log("🧠 Initializing socket...");

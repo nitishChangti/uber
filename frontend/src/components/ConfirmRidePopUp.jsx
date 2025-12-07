@@ -13,7 +13,7 @@ const ConfirmRidePopUp = ({ setConfirmRidePopUpPanel, setRidePopUpPanel , ride})
 
   try {
     const response = await axios.post(
-    `${import.meta.VITE_BASE_URL}/rides/start-ride`,
+    `${import.meta.env.VITE_BASE_URL}/rides/start-ride`,
       {
         rideId: ride?._id,
         otp: e.target[0].value,
@@ -114,7 +114,7 @@ const ConfirmRidePopUp = ({ setConfirmRidePopUpPanel, setRidePopUpPanel , ride})
         url: "https://trueway-geocoding.p.rapidapi.com/Geocode",
         params: { address },
         headers: {
-            "X-RapidAPI-Key": `${import.meta.VITE_RAPIDAPI_KEY}`,
+            "X-RapidAPI-Key": `${import.meta.env.VITE_RAPIDAPI_KEY}`,
             "X-RapidAPI-Host": "trueway-geocoding.p.rapidapi.com"
         }
     };

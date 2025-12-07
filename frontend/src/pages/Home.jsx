@@ -217,7 +217,7 @@ const Home = () => {
         setPanelOpen(false)
         try {
               const accessToken = JSON.parse(localStorage.getItem('accessToken'));
-           const res = await fetch(`${import.meta.VITE_BASE_URL}/rides/get-fare?pickup=${encodeURIComponent(pickUp)}&destination=${encodeURIComponent(destination)}`, {
+           const res = await fetch(`${import.meta.env.VITE_BASE_URL}/rides/get-fare?pickup=${encodeURIComponent(pickUp)}&destination=${encodeURIComponent(destination)}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ const Home = () => {
                const accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
     const res = await axios.post(
-        `${import.meta.VITE_BASE_URL}/rides/create`,
+        `${import.meta.env.VITE_BASE_URL}/rides/create`,
       {
         pickup: pickUp,
         destination: destination,

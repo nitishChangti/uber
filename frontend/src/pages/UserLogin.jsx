@@ -27,7 +27,7 @@ const UserLogin = () => {
                 localStorage.setItem('accessToken', JSON.stringify(response.data.data.accessToken));
                 localStorage.setItem('userAuth', JSON.stringify(true))
                 // ✅ Connect socket immediately after login
-                dispatch(connectSocket(`${import.meta.VITE_BASE_URL }`));
+                dispatch(connectSocket(`${import.meta.env.VITE_BASE_URL }`));
                 navigate('/home')
 
             }
