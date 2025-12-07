@@ -14,7 +14,8 @@ const LocationSearchPanel = ({
     setDestination,
     selectedDestination,
     setSelectedDestination,
-    findTrip
+    findTrip,
+    useCurrentLocation
 }) => {
 
 
@@ -64,14 +65,14 @@ const LocationSearchPanel = ({
         try {
             const accessToken = JSON.parse(localStorage.getItem('accessToken'));
              const response = await axios.get(
-      `http://localhost:5000/maps/get-suggestions?input=${encodeURIComponent(input)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
+            `${import.meta.VITE_BASE_URL}/maps/get-suggestions?input=${encodeURIComponent(input)}`,
+            {
+             headers: {
+               Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+             },
         // withCredentials: true // optional: include cookies if present
-      }
+        }
     );
             // const data = await response.json();
             // console.log(data.data.suggestions);
@@ -113,7 +114,17 @@ const LocationSearchPanel = ({
     }, [panelOpen, debouncedPickUp]); // ✅ only these deps
 
     return (
-        <div className='w-full h-fit flex flex-col gap-3 p-4'>
+        <div className='w-full h-fit flex flex-col gap-3 p-4 border-2'>
+           {/* ⭐ CURRENT LOCATION OPTION */}
+      <div
+        onClick={() => {
+          useCurrentLocation(); // call parent function
+        }}
+        className="w-full p-3 bg-gray-100 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-gray-200"
+      >
+        <i className="ri-navigation-fill text-blue-600 text-2xl"></i>
+        <span className="text-lg font-semibold">Use Current Location</span>
+      </div>
             {/* 2️⃣ Map over the addresses array */}
             {addresses.map((address, index) => (
                 <div

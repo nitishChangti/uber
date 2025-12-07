@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class CaptainService {
-    baseUrl = 'http://localhost:5000'; // change this to your backend url
+    baseUrl = `${import.meta.VITE_BASE_URL}`; // change this to your backend url
 
     async login(email, password) {
 

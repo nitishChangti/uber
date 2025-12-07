@@ -23,7 +23,7 @@ const CaptainSignIn = () => {
                 const captainData = res.data.data.captain
                 console.log(captainData)
                 dispatch(capLogin(captainData))
-                 dispatch(connectSocket('http://localhost:5000'));
+                 dispatch(connectSocket(`${import.meta.VITE_BASE_URL }`));
                 navigate('/captain-home')
             }
             else {

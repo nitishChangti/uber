@@ -134,7 +134,7 @@ useEffect(() => {
     async function confirmRide() {
         try {
             console.log('this is a confirm func is being called');
-            const res= await axios.post( 'http://localhost:5000/rides/confirm', {
+            const res= await axios.post( `${import.meta.VITE_BASE_URL}/rides/confirm`, {
                 rideId: ride._id,
                 captainId: captain._id,
             } , {

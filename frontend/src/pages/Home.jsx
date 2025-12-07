@@ -43,7 +43,8 @@ const Home = () => {
     const [fare, setFare] = useState({})
     const [vehicleType, setVehicleType] = useState('')
     const user = useSelector((state) => state.auth.userData);
-    
+    const [liveLocation, setLiveLocation] = useState(null);
+
     useEffect(() => {
         console.log('user before joining room');
          // ✅ Wait until user exists AND socket is connected
@@ -216,7 +217,7 @@ const Home = () => {
         setPanelOpen(false)
         try {
               const accessToken = JSON.parse(localStorage.getItem('accessToken'));
-           const res = await fetch(`http://localhost:5000/rides/get-fare?pickup=${encodeURIComponent(pickUp)}&destination=${encodeURIComponent(destination)}`, {
+           const res = await fetch(`${import.meta.VITE_BASE_URL}/rides/get-fare?pickup=${encodeURIComponent(pickUp)}&destination=${encodeURIComponent(destination)}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -242,7 +243,7 @@ const Home = () => {
                const accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
     const res = await axios.post(
-      'http://localhost:5000/rides/create',
+        `${import.meta.VITE_BASE_URL}/rides/create`,
       {
         pickup: pickUp,
         destination: destination,
@@ -276,15 +277,40 @@ const Home = () => {
             console.log(error)
         }
     }
+
+    async function useCurrentLocationAsPickup() {
+  if (!liveLocation) {
+    alert("Getting GPS location...");
+    return;
+  }
+
+  try {
+    // const [lat, lng] = liveLocation;
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${liveLocation.lat}&lon=${liveLocation.lng}&format=json`
+    );
+
+    const data = await res.json();
+    const address = data?.display_name || "Current Location";
+
+    setPickUp(address);
+    setSelectedAddress(address);
+    // setPanelOpen(false);
+
+  } catch (err) {
+    console.log("Reverse geocoding failed:", err);
+  }
+}
+
+
     return (
         <div className=" relative w-full h-screen border-2">
             {/* <img onClick={() => {
                 setVehiclePanel(false)
             }} className='w-full h-screen object-cover' src={map} alt="" /> */}
             <div className="absolute inset-0 z-0">
-  <LiveTracking />
-</div>
-
+                <LiveTracking onLocationUpdate={setLiveLocation} />
+            </div>
 
             <div className="absolute top-7 w-full px-7 flex justify-between">
                 <img className='w-25' src={logo} alt="" />
@@ -301,7 +327,7 @@ const Home = () => {
                 className={`absolute ${panelOpen ? ' h-screen' : 'bottom-0 '}  bg-white w-full flex-col border-0 flex rounded-t-2xl `}>
 
                 <div
-                    className='p-5 w-full flex flex-col gap-5 h-[30%] '>
+                    className='p-5 w-full flex flex-col gap-5 h-[30%] border-2'>
                     <h1
                         ref={panelCloseRef}
                         onClick={(e) => setPanelOpen(false)}
@@ -336,7 +362,7 @@ const Home = () => {
                         selectedAddress={selectedAddress} selectedDestination={selectedDestination}
                         setSelectedDestination={setSelectedDestination} setSelectedAddress={setSelectedAddress}
                         destination={destination} setDestination={setDestination}
-                        findTrip={findTrip}
+                        findTrip={findTrip}  useCurrentLocation={useCurrentLocationAsPickup}  // ⭐ NEW
                     />
 
                 </div>
@@ -361,7 +387,7 @@ const Home = () => {
             </div>
             <div
                 ref={vehicleFoundRef}
-                className='w-full py-0 px-4 fixed bottom-0 translate-y-full z-10 bg-white'>
+                className='w-full py-0 px-4 mt-10 fixed bottom-0 translate-y-full z-10 bg-white'>
                 <h1
                     // ref={panelCloseRef}
                     onClick={(e) => {

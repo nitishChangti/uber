@@ -7,7 +7,7 @@ const FinishRide = ({ rideData }) => {
     const navigate=useNavigate();
     const endRide = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/rides/finish-ride', {
+            const response = await axios.post(`${import.meta.VITE_BASE_URL}/rides/finish-ride`, {
                 rideId: rideData?._id,
             }, {    
                 withCredentials: true

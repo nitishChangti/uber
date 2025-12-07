@@ -37,7 +37,7 @@ const App = () => {
               // Initialize socket connection
               // Connect socket with user token
               console.log('connect socket before start');
-              dispatch(connectSocket('http://localhost:5000'));
+              dispatch(connectSocket(`${import.meta.VITE_BASE_URL}`));
               console.log('connect socket is done');
             } else {
               console.log('logout called')
@@ -62,7 +62,7 @@ const App = () => {
               dispatch(capLogin(user));
               // localStorage.setItem('capAuth', JSON.stringify(true));
               // Connect socket with captain token
-              dispatch(connectSocket('http://localhost:5000'));
+              dispatch(connectSocket(`${import.meta.VITE_BASE_URL}`));
             } else {
               dispatch(capLogout());
               // localStorage.removeItem("capAuth")
