@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class AuthService {
-    baseUrl = `${import.meta.VITE_BASE_URL}`; // change this to your backend url
+    baseUrl = import.meta.VITE_BASE_URL; // change this to your backend url
 
     async login(email, password) {
         console.log(email, password)
