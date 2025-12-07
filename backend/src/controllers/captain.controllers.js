@@ -1,8 +1,8 @@
 import Captain from "../models/Captain.models.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js";
-import { ApiResponse } from "../utils/ApiRes.js";
-import { validationResult } from "express-validator";
+import {asyncHandler} from "../utils/asyncHandler.js";
+import {ApiError} from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiRes.js";
+import {validationResult} from "express-validator";
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {

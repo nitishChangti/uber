@@ -1,7 +1,7 @@
 import User from '../models/user.models.js';
 import Captain from '../models/Captain.models.js';
 import Jwt from "jsonwebtoken";
-import { ApiError } from "../utils/apiError.js"
+import {ApiError} from "../utils/ApiError.js"
 import BlackListToken from '../models/blackListToken.models.js';
 const authorization = (allowedRoles) => {
     return async (req, res, next) => {

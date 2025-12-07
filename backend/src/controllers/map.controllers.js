@@ -1,8 +1,8 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import axios from "axios";
-import { ApiError } from "../utils/apiError.js";
-import { ApiResponse } from "../utils/ApiRes.js";
-import { validationResult } from "express-validator";
+import {ApiError} from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiRes.js";
+import {validationResult} from "express-validator";
 import Captain from "../models/Captain.models.js";
 
 // const getCoordinates = asyncHandler(async (req, res) => {
