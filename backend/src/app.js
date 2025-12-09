@@ -3,22 +3,22 @@ const app = express();
 
 import {ApiError} from './utils/ApiError.js'
 import cors from 'cors';
-// app.use(cors(
-//     {
-//         origin: ['http://localhost:5173','https://uber-red-delta.vercel.app'],
-//         // origin: '*', // Allow all origins for development, restrict in production
-//         credentials: true
-//     }
-// ))
+app.use(cors(
+    {
+        origin: ['http://localhost:5173','https://uber-red-delta.vercel.app'],
+        // origin: '*', // Allow all origins for development, restrict in production
+        credentials: true
+    }
+))
 
-app.use(cors({
-    origin: [
-        'https://uber-seven-mu.vercel.app', // Your frontend on Vercel
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+// app.use(cors({
+//     origin: [
+//         'https://uber-seven-mu.vercel.app', // Your frontend on Vercel
+//     ],
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true
+// }));
 
 
 import cookieParser from 'cookie-parser';

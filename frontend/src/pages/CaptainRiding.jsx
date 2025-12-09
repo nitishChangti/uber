@@ -235,6 +235,17 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const destinationIcon = new L.Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+
 const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
   const [remainingDistance, setRemainingDistance] = useState(null);
@@ -271,6 +282,34 @@ const CaptainRiding = () => {
 
     setTimeout(() => mapRef.current.invalidateSize(), 300);
   }, []);
+
+  // ⭐ Place initial captain marker (VERY IMPORTANT)
+useEffect(() => {
+  if (!captainInitialLocation || !mapRef.current) return;
+
+  // Create marker once
+  if (!captainMarkerRef.current) {
+    captainMarkerRef.current = L.marker([
+      captainInitialLocation.lat,
+      captainInitialLocation.lng
+    ]).addTo(mapRef.current);
+  }
+
+  // Center map on captain initial position
+  mapRef.current.setView(
+    [captainInitialLocation.lat, captainInitialLocation.lng],
+    17
+  );
+}, [captainInitialLocation]);
+
+// ⭐ Add destination marker
+useEffect(() => {
+  if (!destinationCoords || !mapRef.current) return;
+
+  L.marker([destinationCoords.lat, destinationCoords.lng], {
+    icon: destinationIcon,
+  }).addTo(mapRef.current);
+}, [destinationCoords]);
 
   // ⭐ Draw route helper
   const drawRoute = (from, to) => {
@@ -329,6 +368,10 @@ const CaptainRiding = () => {
           captainMarkerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
         } else {
           captainMarkerRef.current.setLatLng([latitude, longitude]);
+          // captainMarkerRef.current.slideTo([latitude, longitude], {
+          //   duration: 500
+          // });
+
         }
 
         mapRef.current.setView([latitude, longitude]);
