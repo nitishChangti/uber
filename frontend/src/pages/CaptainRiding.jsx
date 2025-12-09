@@ -355,43 +355,125 @@ useEffect(() => {
   }, [captainInitialLocation, destinationCoords]);
 
   // ⭐ Captain Live GPS Tracking
-  useEffect(() => {
-    if (!rideData || !captain) return;
+  // useEffect(() => {
+  //   if (!rideData || !captain) return;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setCaptainLiveLocation({ lat: latitude, lng: longitude });
+  //   const watchId = navigator.geolocation.watchPosition(
+  //     (pos) => {
+  //       const { latitude, longitude } = pos.coords;
+  //       setCaptainLiveLocation({ lat: latitude, lng: longitude });
 
-        // Marker update
-        if (!captainMarkerRef.current) {
-          captainMarkerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
-        } else {
-          captainMarkerRef.current.setLatLng([latitude, longitude]);
-          // captainMarkerRef.current.slideTo([latitude, longitude], {
-          //   duration: 500
-          // });
+  //       // Marker update
+  //       if (!captainMarkerRef.current) {
+  //         captainMarkerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
+  //       } else {
+  //         captainMarkerRef.current.setLatLng([latitude, longitude]);
+  //         // captainMarkerRef.current.slideTo([latitude, longitude], {
+  //         //   duration: 500
+  //         // });
 
-        }
+  //       }
 
-        mapRef.current.setView([latitude, longitude]);
+  //       mapRef.current.setView([latitude, longitude]);
 
-        // Send to backend
-        dispatch(
-          sendMessage("captain-location-update", {
-            rideId: rideData._id,
-            captainId: captain._id,
-            lat: latitude,
-            lng: longitude,
-          })
+  //       // Send to backend
+  //       dispatch(
+  //         sendMessage("captain-location-update", {
+  //           rideId: rideData._id,
+  //           captainId: captain._id,
+  //           lat: latitude,
+  //           lng: longitude,
+  //         })
+  //       );
+  //     },
+  //     (err) => console.log("GPS Error:", err),
+  //     { enableHighAccuracy: true }
+  //   );
+
+  //   return () => navigator.geolocation.clearWatch(watchId);
+  // }, [rideData, captain]);
+
+// ⭐ Captain Live GPS Tracking with Full Debugging
+useEffect(() => {
+  if (!rideData || !captain) {
+    alert("DEBUG: rideData or captain missing");
+    return;
+  }
+
+  alert("DEBUG: watchPosition STARTED");
+
+  const watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+
+      // 🔥 1. Show new GPS coordinates every time they update
+      alert(
+        "GPS UPDATE RECEIVED:\n" +
+        "Lat: " + latitude + "\n" +
+        "Lng: " + longitude + "\n" +
+        "Timestamp: " + new Date().toLocaleTimeString()
+      );
+
+      // 🔥 2. Check if coordinates are same as before
+      if (captainLiveLocation) {
+        const same =
+          captainLiveLocation.lat === latitude &&
+          captainLiveLocation.lng === longitude;
+
+        alert(
+          same
+            ? "⚠️ Coordinates SAME as last update (GPS not changing)"
+            : "✅ Coordinates CHANGED (GPS movement detected!)"
         );
-      },
-      (err) => console.log("GPS Error:", err),
-      { enableHighAccuracy: true }
-    );
+      }
 
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [rideData, captain]);
+      // Update state
+      setCaptainLiveLocation({ lat: latitude, lng: longitude });
+
+      // 🔥 3. Debug marker creation/update
+      if (!captainMarkerRef.current) {
+        alert("DEBUG: Creating initial captain marker");
+        captainMarkerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
+      } else {
+        alert("DEBUG: Updating captain marker position");
+        captainMarkerRef.current.setLatLng([latitude, longitude]);
+      }
+
+      // 🔥 4. Debug centering
+      alert("DEBUG: Centering map on captain");
+
+      mapRef.current.setView([latitude, longitude]);
+
+      // 🔥 5. Debug dispatch to backend
+      alert("DEBUG: Dispatching socket location update");
+
+      dispatch(
+        sendMessage("captain-location-update", {
+          rideId: rideData._id,
+          captainId: captain._id,
+          lat: latitude,
+          lng: longitude,
+        })
+      );
+    },
+
+    // Error callback
+    (err) => {
+      alert("GPS ERROR:\n" + JSON.stringify(err));
+      console.log("GPS Error:", err);
+    },
+
+    // High accuracy settings
+    { enableHighAccuracy: true }
+  );
+
+  return () => {
+    alert("DEBUG: watchPosition STOPPED");
+    navigator.geolocation.clearWatch(watchId);
+  };
+}, [rideData, captain, captainLiveLocation]);
+
+
 
   // ⭐ Update remaining distance EVERY 10 seconds
   useEffect(() => {
