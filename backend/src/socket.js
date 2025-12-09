@@ -46,7 +46,7 @@ let io; // global variable to store the io instance
 export function initializeSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173","https://uber-lemon.vercel.app"], // your frontend (Vite, React, etc.)
+      origin: ["http://localhost:5173","https://uber-seven-beta.vercel.app/"], // your frontend (Vite, React, etc.)
       methods: ["GET", "POST"],
       credentials: true,
     },

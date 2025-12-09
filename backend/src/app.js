@@ -13,7 +13,7 @@ import cors from 'cors';
 
 app.use(cors({
     origin: [
-        'https://uber-lemon.vercel.app', // Your frontend on Vercel
+        'https://uber-seven-beta.vercel.app/', // Your frontend on Vercel
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
