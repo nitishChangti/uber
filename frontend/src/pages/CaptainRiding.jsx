@@ -220,6 +220,23 @@ import "leaflet-routing-machine";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessage } from "../store/socketSlice";
 
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine";
+
+// ⭐ Fix Leaflet marker images
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+
 // ⭐ Distance function
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth radius (km)
