@@ -220,9 +220,6 @@ import "leaflet-routing-machine";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessage } from "../store/socketSlice";
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine";
 
 // ⭐ Fix Leaflet marker images
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -277,7 +274,8 @@ const CaptainRiding = () => {
   const destinationCoords = location.state?.destinationCoords;
   const hasStarted = location.state?.hasStarted;
 
-  const captain = useSelector((state) => state.auth.userData);
+  const captain = useSelector((state) => state.captain.captainData);
+
   const dispatch = useDispatch();
 
   const mapRef = useRef(null);
@@ -411,9 +409,11 @@ useEffect(() => {
   // }, [rideData, captain]);
 
 // ⭐ Captain Live GPS Tracking with Full Debugging
+
+
 useEffect(() => {
   if (!rideData || !captain) {
-    alert("DEBUG: rideData or captain missing");
+    alert(`DEBUG: rideData ${rideData} or captain missing ${captain}`);
     return;
   }
 
@@ -488,7 +488,7 @@ useEffect(() => {
     alert("DEBUG: watchPosition STOPPED");
     navigator.geolocation.clearWatch(watchId);
   };
-}, [rideData, captain, captainLiveLocation]);
+}, [rideData, captain]);
 
 
 
