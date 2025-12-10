@@ -173,7 +173,8 @@ const Home = () => {
     }, [vehiclePanel])
 
     useGSAP(() => {
-        if (ConfirmRidePanel) {
+          if (!confirmRidePanelRef.current) return;
+        if (ConfirmRidePanel) { 
             gsap.to(confirmRidePanelRef.current, {
                 transform: 'translateY(0)'
             })
@@ -187,6 +188,7 @@ const Home = () => {
 
 
     useGSAP(() => {
+         if (!vehicleFoundRef.current) return;  // important
         if (vehicleFound) {
             gsap.to(vehicleFoundRef.current, {
                 transform: 'translateY(0)'
@@ -200,6 +202,7 @@ const Home = () => {
     }, [vehicleFound])
 
     useGSAP(() => {
+            if (!waitingForDriverRef.current) return;
         if (waitingForDriver) {
             gsap.to(waitingForDriverRef.current, {
                 transform: 'translateY(0)'
@@ -296,7 +299,12 @@ const Home = () => {
     setPickUp(address);
     setSelectedAddress(address);
     // setPanelOpen(false);
-
+    console.log(panelOpen);
+    
+    console.log(confirmRidePanelRef);
+    console.log(ConfirmRidePanel);
+    // console.log(waitingForDriverRef);
+    // console.log(LookingForDriver);
   } catch (err) {
     console.log("Reverse geocoding failed:", err);
   }
@@ -327,7 +335,7 @@ const Home = () => {
                 className={`absolute ${panelOpen ? ' h-screen' : 'bottom-0 '}  bg-white w-full flex-col border-0 flex rounded-t-2xl `}>
 
                 <div
-                    className='p-5 w-full flex flex-col gap-5 h-[30%] border-2'>
+                    className='p-5 w-full flex flex-col gap-5 h-[30%] '>
                     <h1
                         ref={panelCloseRef}
                         onClick={(e) => setPanelOpen(false)}
@@ -373,7 +381,22 @@ const Home = () => {
                 <VehiclePanel setVehiclePanel={setVehiclePanel} setConfirmRidePanel={setConfirmRidePanel}
                     fare={fare} vehicleType={vehicleType} setVehicleType={setVehicleType} createRide={createRide} />
             </div>
-            <div
+            {/* <div
+                ref={confirmRidePanelRef}
+                className='w-full py-0 px-4 fixed bottom-0 translate-y-full z-10 bg-white'>
+                <h1
+                    // ref={panelCloseRef}
+                    onClick={(e) => {
+                        console.log(' panel close');
+                        setConfirmRidePanel(false)
+                    }}
+                    className='h-fit text-4xl text-center'><i className="ri-arrow-down-s-line"></i></h1>
+                <ConfirmRide createRide={createRide} pickUp={pickUp} vehicleType={vehicleType} destination={destination} fare={fare} setVehicleFound={setVehicleFound} setConfirmRidePanel={setConfirmRidePanel} />
+            </div> */}
+            {
+                ConfirmRidePanel && 
+                (
+                    <div
                 ref={confirmRidePanelRef}
                 className='w-full py-0 px-4 fixed bottom-0 translate-y-full z-10 bg-white'>
                 <h1
@@ -385,9 +408,15 @@ const Home = () => {
                     className='h-fit text-4xl text-center'><i className="ri-arrow-down-s-line"></i></h1>
                 <ConfirmRide createRide={createRide} pickUp={pickUp} vehicleType={vehicleType} destination={destination} fare={fare} setVehicleFound={setVehicleFound} setConfirmRidePanel={setConfirmRidePanel} />
             </div>
-            <div
-                ref={vehicleFoundRef}
-                className='w-full py-0 px-4 mt-10 fixed bottom-0 translate-y-full z-10 bg-white'>
+                )
+            }
+            {
+                vehicleFound &&
+                (
+
+                    <div
+                    ref={vehicleFoundRef}
+                    className='w-full py-0 px-4  fixed bottom-0 translate-y-full z-10 bg-white'>
                 <h1
                     // ref={panelCloseRef}
                     onClick={(e) => {
@@ -397,6 +426,8 @@ const Home = () => {
                     className='h-fit text-4xl text-center'><i className="ri-arrow-down-s-line"></i></h1>
                 <LookingForDriver pickUp={pickUp} vehicleType={vehicleType} destination={destination} fare={fare} />
             </div>
+                )
+            }
             <div
                 ref={waitingForDriverRef}
                 className='w-full py-0 px-4 fixed bottom-0 translate-y-full z-10 bg-white'>

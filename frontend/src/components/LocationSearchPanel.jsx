@@ -114,7 +114,7 @@ const LocationSearchPanel = ({
     }, [panelOpen, debouncedPickUp]); // ✅ only these deps
 
     return (
-        <div className='w-full h-fit flex flex-col gap-3 p-4 border-2'>
+        <div className='w-full h-fit flex flex-col gap-3 p-4'>
            {/* ⭐ CURRENT LOCATION OPTION */}
       <div
         onClick={() => {
