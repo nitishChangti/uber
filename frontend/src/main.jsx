@@ -16,6 +16,12 @@ import { CapProtected as CaptainLayout } from './components/CapLayout.jsx'
 import CaptainHome from './pages/CaptainHome.jsx'
 import Riding from './pages/Riding.jsx'
 import CaptainRiding from './pages/CaptainRiding.jsx'
+import UserProfile from './pages/UserProfile.jsx'
+import RideHistory from './pages/RideHistory.jsx'
+import EditProfile from './pages/EditProfile.jsx'
+import CaptainProfile from './pages/CaptainProfile.jsx'
+import CaptainEditProfile from './pages/CaptainEditProfile.jsx'
+import CaptainRideHistory from './pages/CaptainRideHistory.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -34,12 +40,60 @@ const router = createBrowserRouter([
         element: <UserSignUp />
       },
       {
+        path: '/profile',
+        element: (
+          <AuthLayout authentication={true}>
+            <UserProfile />
+          </AuthLayout>
+        )
+      },
+      {
+        path: '/ride-history',
+        element: (
+          <AuthLayout authentication={true}>
+            <RideHistory />
+          </AuthLayout>
+        )
+      },
+      {
+        path: '/edit-profile',
+        element: (
+          <AuthLayout authentication={true}>
+            <EditProfile />
+          </AuthLayout>
+        )
+      },
+      {
         path: '/captain-login',
         element: <CaptainSignIn />
       },
       {
         path: '/captain-signup',
         element: <CaptainSignup />
+      },
+      {
+        path:'/captain-profile',
+        element:(
+          <CaptainLayout authentication={true}>
+            <CaptainProfile />
+          </CaptainLayout>
+        )
+      },
+       {
+        path:'/captain-edit-profile',
+        element:(
+          <CaptainLayout authentication={true}>
+            <CaptainEditProfile />
+          </CaptainLayout>
+        )
+      },
+      {
+        path:'/captain-ride-history',
+        element:(
+          <CaptainLayout authentication={true}>
+            <CaptainRideHistory/>
+          </CaptainLayout>
+        )
       },
       {
         path: '/home',

@@ -924,7 +924,7 @@ useEffect(() => {
   return (
     <div className="w-full h-screen">
       {/* Header */}
-      <div className="fixed flex items-center justify-between top-5 px-5 w-full">
+      <div className="fixed flex items-center justify-between top-5 px-5 w-full z-[9999]">
         <div className="w-20 left-7">
           <img src={logo} alt="" />
         </div>
@@ -961,7 +961,7 @@ useEffect(() => {
       {/* Finish Ride Panel */}
       <div
         ref={finishRidePanelRef}
-        className="w-full h-4/5 py-5 px-2 fixed bottom-0 translate-y-full z-10 bg-white"
+        className="w-full h-5/6 py-4 px-2 fixed bottom-0 translate-y-full z-[9999] bg-white"
       >
         <h1
           onClick={() => setFinishRidePanel(false)}

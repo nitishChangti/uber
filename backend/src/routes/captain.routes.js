@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { body } from 'express-validator';
 import { authorization } from "../middlewares/roleAuth.js"
-import { registerCaptain, loginCaptain, profileCaptain, logOutCaptain, getCurrentCaptainData } from '../controllers/captain.controllers.js';
+import { registerCaptain, loginCaptain, profileCaptain, logOutCaptain, getCurrentCaptainData,updateCaptainProfile,  getCaptainEarnings, getCaptainRideHistory } from '../controllers/captain.controllers.js';
 router.route('/register').post(
     [
         body('fullName').notEmpty().withMessage('Username is required'),
@@ -40,4 +40,12 @@ router.route('/logout').get(
     logOutCaptain
 )
 
+router.route('/update-profile').put(
+    authorization('captain'),
+    updateCaptainProfile
+)
+
+router.route("/earnings").get( authorization("captain"), getCaptainEarnings);
+
+router.route("/ride-history").get(authorization('captain'), getCaptainRideHistory)
 export default router;

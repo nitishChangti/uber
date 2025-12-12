@@ -3,7 +3,7 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/ApiRes.js";
 import {validationResult} from "express-validator";
-
+import Ride from "../models/ride.models.js";
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const captain = await Captain.findById(userId)
@@ -153,7 +153,14 @@ const loginCaptain = asyncHandler(async (req, res) => {
         .json(new ApiResponse(
             200,
             {
-                captain: { _id: captain._id, fullName: captain.fullName, email: captain.email },
+                captain: { 
+                    _id: captain._id, 
+                    fullName: captain.fullName, 
+                    email: captain.email ,
+                    phone:captain.phone,
+                    status:captain.status,
+                    vehicle:captain.vehicle
+                },
                 accessToken
             },
             "Captain logged in successfully",
@@ -222,11 +229,159 @@ const getCurrentCaptainData = asyncHandler(async (req, res) => {
         )
     );
 })
+const updateCaptainProfile = asyncHandler(async (req, res) => {
+  const captainId = req.captain._id;
+
+  const {
+    fullName,
+    email,
+    phone,
+    vehicleType,
+    color,
+    plate,
+    capacity,
+    password
+  } = req.body;
+
+  console.log("req body of update cap", req.body);
+
+  // Basic validations
+  if (!fullName || !phone || !email) {
+    throw new ApiError(400, "Full name, phone, and email are required");
+  }
+
+  // Build update object
+  let updateData = {
+    fullName,
+    email,
+    phone
+  };
+
+  // Vehicle update only if at least one vehicle field provided
+  if (vehicleType || color || plate || capacity) {
+    updateData.vehicle = {
+      vehicleType,
+      color,
+      plate,
+      capacity
+    };
+  }
+
+  // Password update
+  if (password && password.trim().length >= 6) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updateData.password = hashedPassword;
+  }
+
+  console.log("updateData is", updateData);
+
+  // Update captain
+  const updatedCaptain = await Captain.findByIdAndUpdate(
+    captainId,
+    updateData,
+    { new: true }
+  ).select("-password -refreshToken");
+
+  if (!updatedCaptain) {
+    throw new ApiError(404, "Captain not found");
+  }
+
+  console.log("updatedCap data is", updatedCaptain);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedCaptain,
+      "Captain profile updated successfully",
+      true
+    )
+  );
+});
+
+const getCaptainEarnings = asyncHandler(async (req, res) => {
+    console.log(`this is controller of get captain earnings`);
+  const captainId = req.captain._id;
+    console.log('cap is ',captainId);
+  // Fetch all rides of captain with earning data
+  const rides = await Ride.find({
+    captain: captainId,
+    status: "completed"
+  });
+
+  const today = new Date();
+  const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+
+  const startOfWeek = new Date();
+  startOfWeek.setDate(today.getDate() - today.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  let todayEarning = 0;
+  let weeklyEarning = 0;
+  let monthlyEarning = 0;
+  let totalEarning = 0;
+
+  for (let ride of rides) {
+    const earning = ride?.earning?.captainShare || 0;
+    const rideDate = new Date(ride.createdAt);
+
+    totalEarning += earning;
+
+    // Today
+    if (rideDate >= startOfToday) {
+      todayEarning += earning;
+    }
+
+    // Weekly
+    if (rideDate >= startOfWeek) {
+      weeklyEarning += earning;
+    }
+
+    // Monthly
+    if (rideDate >= startOfMonth) {
+      monthlyEarning += earning;
+    }
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        todayEarning,
+        weeklyEarning,
+        monthlyEarning,
+        totalEarning,
+      },
+      "Captain earnings calculated successfully"
+    )
+  );
+});
+
+const getCaptainRideHistory = asyncHandler(async (req, res) => {
+  const captainId = req.captain._id;
+
+  const rides = await Ride.find({ captain: captainId })
+    .populate("user", "username phone email") 
+    .sort({ createdAt: -1 }); // latest first
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      rides,
+      "Captain ride history fetched successfully",
+      true
+    )
+  );
+});
 
 export {
     registerCaptain,
     loginCaptain,
     profileCaptain,
     logOutCaptain,
-    getCurrentCaptainData
+    getCurrentCaptainData,
+    updateCaptainProfile,
+     getCaptainEarnings,
+     getCaptainRideHistory
 };

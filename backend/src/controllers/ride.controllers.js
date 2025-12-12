@@ -7,6 +7,8 @@ import {getCoordinatesByAddress} from "../utils/map.js";
 import {getCaptainsInTheRadius} from "./map.controllers.js";
 import  sendMessageToSocketId from "../socket.js";
 import Ride from "../models/ride.models.js";
+import User from "../models/user.models.js";
+import Captain from "../models/Captain.models.js";
 // Create a new ride                                                                
 const createNewRide = asyncHandler(async (req, res,next) => {
     console.log('Create New Ride Request Body:', req.body);
@@ -159,52 +161,114 @@ const confirmRide= asyncHandler(async (req, res) => {
         true
     ));
 })
+const finishRide = asyncHandler(async (req, res) => {
+  console.log("Finishing ride", req.body);
 
-const  finishRide = asyncHandler(async (req, res) => {
-    console.log('Finishing ride', req.body);
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    const { rideId } = req.body;
-    const captain = req.captain;
-    console.log('captain is',captain);
-    if (!rideId) {
-        return res.status(400).json({ message: 'rideId is required' });
-    }
-     // Fetch ride with populated user & captain
-    let ride = await Ride.findOne({
-        _id: rideId,
-        captain: captain._id
-    })
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { rideId } = req.body;
+  const captain = req.captain;
+
+  if (!rideId) {
+    return res.status(400).json({ message: "rideId is required" });
+  }
+
+  // Fetch ride
+  let ride = await Ride.findOne({
+    _id: rideId,
+    captain: captain._id,
+  })
     .populate("user", "username email phone socketId")
     .populate("captain", "fullName phone vehicle socketId");
-    if (!ride) {
-        return res.status(404).json({ message: 'Ride not found or not assigned to this captain' });
-    }
-    if(ride.status !== 'ongoing'){
-        return res.status(400).json({ message: 'Ride is not ongoing' });
-    }
-    ride.status = 'completed';
-    await ride.save();   // <-- CORRECT FIX
-    console.log('ride finish is',ride);
-    sendMessageToSocketId( ride.user.socketId,{
-        event: 'ride-finished',
-        data: ride,
-    })
-    console.log('ride finish message is sending to user');
-    return res.status(200).json(new ApiResponse(
-        200,
-        {ride},
-        'Ride finished successfully',
-        true
-    ));
-})
+
+  if (!ride) {
+    return res
+      .status(404)
+      .json({ message: "Ride not found or not assigned to this captain" });
+  }
+
+  if (ride.status !== "ongoing") {
+    return res.status(400).json({ message: "Ride is not ongoing" });
+  }
+
+  // ----------------------------------------------------
+  // ⭐ EARNING LOGIC (simple & clean)
+  // ----------------------------------------------------
+  const fare = ride.fare;
+  const commissionRate = 0.10; // 10% commission (you can change)
+
+  const platformCommission = fare * commissionRate;
+  const captainShare = fare - platformCommission;
+
+  // store inside ride
+  ride.earning = {
+    captainShare,
+    platformCommission,
+  };
+
+  ride.status = "completed";
+  await ride.save();
+
+  console.log("Ride finished with earnings:", ride.earning);
+
+  // ----------------------------------------------------
+  // ⭐ ADD ride to user's history
+  // ----------------------------------------------------
+  await User.findByIdAndUpdate(
+    ride.user._id,
+    { $push: { rideHistory: ride._id } },
+    { new: true }
+  );
+
+  console.log("Ride added to user history");
+
+  // ----------------------------------------------------
+  // ⭐ ADD ride to captain's history & update earnings
+  // ----------------------------------------------------
+  await Captain.findByIdAndUpdate(
+    captain._id,
+    {
+      $push: { rideHistory: ride._id },
+      $inc: { totalEarnings: captainShare }, // add earning
+    },
+    { new: true }
+  );
+
+  console.log("Ride added to captain history + earnings updated");
+
+  // ----------------------------------------------------
+  // ⭐ Notify user through socket
+  // ----------------------------------------------------
+  try {
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-finished",
+      data: ride,
+    });
+    console.log("Ride finish notification sent to user");
+  } catch (err) {
+    console.log("Socket send error:", err);
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { ride },
+      "Ride finished successfully",
+      true
+    )
+  );
+});
+
+
 
 export {
     createNewRide,
     getFareRide,
     confirmRide,
     startRide,
-    finishRide
+    finishRide,
+   
 }

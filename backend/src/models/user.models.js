@@ -36,6 +36,12 @@ const userSchema = new mongoose.Schema({
     socketId: {
         type: String,
     },
+    rideHistory: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Ride"
+        }
+    ],
 }, {
     timestamps: true,
 })

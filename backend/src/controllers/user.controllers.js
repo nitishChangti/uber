@@ -187,10 +187,67 @@ const getCurrentUserData = asyncHandler(async (req, res) => {
     );
 })
 
+const getUserRideHistory = asyncHandler(async (req, res) => {
+    console.log(` this is a controller of get user ride history`);
+    const userId = req.user._id;
+console.log('user is ',userId);
+    const user = await User.findById(userId)
+  .populate({
+    path: "rideHistory",
+    populate: [
+      { path: "captain", select: "fullName phone vehicle" }
+    ],
+    options: { sort: { createdAt: -1 } }
+  });
+
+        console.log('user history',user);
+    return res.status(200).json(
+        new ApiResponse(200, user.rideHistory, "Ride history fetched successfully")
+    );
+});
+
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const { username, phone, email } = req.body;
+
+  if (!username || !phone) {
+    throw new ApiError(400, "Username and phone are required");
+  }
+
+  // Optional: Prevent duplicate email issue
+  if (email) {
+    const existingEmail = await User.findOne({ email, _id: { $ne: userId } });
+    if (existingEmail) {
+      throw new ApiError(400, "Email already in use by another account");
+    }
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { username, phone, email },
+    { new: true, runValidators: true }
+  ).select("-password -refreshToken");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser,
+      "Profile updated successfully",
+      true
+    )
+  );
+});
+
+
 export {
     registerUser,
     loginUser,
     getUserProfile,
     logoutUser,
-    getCurrentUserData
+    getCurrentUserData,getUserRideHistory,updateUserProfile
 }

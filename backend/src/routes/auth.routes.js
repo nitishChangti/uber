@@ -26,10 +26,10 @@ import {
     registerUser,
     loginUser,
     getUserProfile,
-    logoutUser, getCurrentUserData
+    logoutUser, getCurrentUserData,getUserRideHistory,updateUserProfile
 } from '../controllers/user.controllers.js';
 import { verifyJWT } from '../middlewares/verifyJwt.js';
-
+import {authorization } from '../middlewares/roleAuth.js';
 router.route('/register')
     .post(
         [body('username').notEmpty().withMessage('Name is required'),
@@ -51,4 +51,9 @@ router.route('/profile').get(verifyJWT, getUserProfile);
 router.route('/logout').get(verifyJWT, logoutUser);
 
 router.route('/getCurrentUser').get(verifyJWT, getCurrentUserData)
+
+router.route("/ride-history").get(verifyJWT,getUserRideHistory);
+
+router.route(  "/update-profile").put( verifyJWT, updateUserProfile)
+
 export default router;

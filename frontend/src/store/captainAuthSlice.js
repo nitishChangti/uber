@@ -3,6 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     captainData: null,
     status: false,
+     earnings: {
+    today: 0,
+    weekly: 0,
+    monthly: 0,
+    total: 0,
+  }
 }
 
 const captainSlice = createSlice({
@@ -44,9 +50,30 @@ const captainSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        
+    // -------------------------------------------------
+    // ⭐ NEW: Full earnings update from API (/earnings)
+    // -------------------------------------------------
+    setEarnings: (state, action) => {
+      state.earnings = { ...action.payload };
+      console.log('set earning is',state.earnings);
+    },
+
+    // -------------------------------------------------
+    // ⭐ NEW: Add earning after finishing a ride
+    // -------------------------------------------------
+    addEarning: (state, action) => {
+      const amount = action.payload;
+
+      state.earnings.today += amount;
+      state.earnings.weekly += amount;
+      state.earnings.monthly += amount;
+      state.earnings.total += amount;
+    },
     }
 })
 
-export const { login, logout, setLoading, setError, register, setUser } = captainSlice.actions;
+export const { login, logout, setCaptain, setLoading, setError, register, setUser,  setEarnings,
+  addEarning, } = captainSlice.actions;
 
 export default captainSlice.reducer;

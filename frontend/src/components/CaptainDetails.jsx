@@ -3,11 +3,12 @@ import { driverPersonImg } from '../assets/index';
 // import { captain } from '../store/store.js';
 
 import { useSelector } from 'react-redux';
-function CaptainDetails() {
+function CaptainDetails({todayEarnings}) {
 
     const captainData = useSelector((state) => state.captain.captainData);
-
-    console.log("Captain Data from Redux:", captainData, captainData.fullName);
+      const earnings = useSelector((state) => state.captain.earnings);
+    const displayTodayEarning = earnings.today !='undefined'?earnings.today  :todayEarnings;
+    console.log("Captain Data from Redux:", captainData);
 
     return (
         <div>
@@ -20,7 +21,7 @@ function CaptainDetails() {
                         <h1 className='text-xl font-semibold'>{captainData.fullName}</h1>
                     </div>
                     <div>
-                        <i className="ri-money-rupee-circle-fill text-xl font-semibold">295.20</i>
+                        <i className="ri-money-rupee-circle-fill text-xl font-semibold">{displayTodayEarning}</i>
                         <p>Earned</p>
                     </div>
                 </div>

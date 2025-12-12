@@ -322,13 +322,20 @@ const Home = () => {
 
             <div className="absolute top-7 w-full px-7 flex justify-between">
                 <img className='w-25' src={logo} alt="" />
-                <div
+                {/* <div
                     onClick={() => {
                         logout();
                     }}
                     className='bg-white rounded-full  w-fit p-1'>
                     <i className=" items-center text-3xl ri-login-box-line"></i>
-                </div>
+                </div> */}
+                <div
+  onClick={() => navigate("/profile")}
+  className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
+>
+  <i className="ri-user-3-fill text-2xl"></i>
+</div>
+
             </div>
             <div
                 ref={containerRef}

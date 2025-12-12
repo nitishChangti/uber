@@ -79,7 +79,23 @@ const CaptainSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
         default: null
-    }
+    },
+       // ⭐ NEW — Captain Ride History
+    rideHistory: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Ride"
+        }
+    ],
+      // ⭐ NEW: Earnings Tracking
+    totalEarnings: { type: Number, default: 0 },       // lifetime earnings
+    todayEarnings: { type: Number, default: 0 },
+    weeklyEarnings: { type: Number, default: 0 },
+    monthlyEarnings: { type: Number, default: 0 },
+
+    // ⭐ NEW: Platform commission collected from this captain
+    totalCommissionPaid: { type: Number, default: 0 },
+
     }, {
     timestamps: true,
 })

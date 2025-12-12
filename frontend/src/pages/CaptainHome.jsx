@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -11,10 +11,11 @@ import { sendMessage,receiveMessage } from '../store/socketSlice';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux'; 
-import {logout as storeCaptainLogout} from '../store/captainAuthSlice.js';
+import {logout as storeCaptainLogout, setEarnings} from '../store/captainAuthSlice.js';
 import {captainService} from '../service/captainService.jsx'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CaptainLiveTracking from '../components/CaptainLiveTracking.jsx';
 const CaptainHome = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -25,7 +26,7 @@ const CaptainHome = () => {
     const [ride, setRide] = useState(null);
     const captain = useSelector((state) => state.captain.captainData);
     const { isConnected } = useSelector((state) => state.socket);
-
+const [TodayEarning,setTodayEarning]= useState(null)
     useEffect(() => {
         if (!captain?._id) return;
   
@@ -87,6 +88,37 @@ useEffect(() => {
     })
   );
 }, [isConnected, dispatch]);
+
+useEffect(() => {
+  console.log("⚡ useEffect triggered | captain:", captain?._id, "connected:", isConnected);
+
+  if (!captain?._id) return console.log("⛔ captain._id missing");
+  if (!isConnected) return console.log("⛔ socket not connected");
+
+  async function loadEarnings() {
+    console.log("📡 Calling earnings API...");
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/captains/earnings`,
+        { withCredentials: true }
+      );
+      console.log('res',res.data.data);
+      console.log("Today earning:", res.data.data.todayEarning);
+      setTodayEarning(res.data.data.todayEarning);
+      dispatch(setEarnings({
+  today: res.data.data.todayEarning,
+  weekly: res.data.data.weeklyEarning,
+  monthly: res.data.data.monthlyEarning,
+  total: res.data.data.totalEarning
+}));
+    console.log(TodayEarning);
+    } catch (err) {
+      console.log("Earning fetch error", err);
+    }
+  }
+
+  loadEarnings();
+}, [isConnected, captain?._id]);
 
     // const captainData = useSelector((state) => state.captain.captainData);
 
@@ -150,26 +182,43 @@ useEffect(() => {
 
     return (
         <div className='w-full h-screen'>
-            <div className='fixed flex items-center justify-between top-5 px-5 w-full'>
+            <div className='fixed flex items-center justify-between top-5 px-5 w-full z-[999]'>
                 <div className='w-20 left-7'>
                     <img className='' src={logo} alt="" />
                 </div>
+                 {/* Profile Button */}
                 <div
-                onClick={() => {
-                        logout();
-                    }}
-                className='w-10 h-10 rounded-full  bg-white flex items-center justify-center shadow-gray-600 '>
-                    <i className="text-2xl ri-login-box-line"></i>
+                    onClick={() => navigate("/captain-profile")}
+                    className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md active:scale-90 transition"
+                >
+                    <i className="ri-user-3-fill text-2xl"></i>
                 </div>
             </div>
 
             {/* here make h-3/5 for section2 and for section1 h-1/2  */}
-            <div className='w-full h-3/5'>
-                <img className='w-full h-full object-cover' src={map} alt="" />
+            <div className="w-full h-3/5 relative z-0">
+                <CaptainLiveTracking
+                    pickupCoords={ride?.pickupCoords || null}
+                    destinationCoords={ride?.destinationCoords || null}
+                    onLocationUpdate={(coords) => {
+                        console.log("Captain Location:", coords);
+
+                        dispatch(
+                            sendMessage("update-location-captain", {
+                                userId: captain._id,
+                                location: {
+                                    type: "Point",
+                                    coordinates: [coords.lng, coords.lat],
+                                },
+                            })
+                        );
+                    }}
+                />
             </div>
+
             {/* here make h-2/5 for section2 and for section1 h-1/2  */}
             <div className='w-full h-2/5 p-4'>
-                <CaptainDetails />
+                <CaptainDetails todayEarnings={TodayEarning} />
             </div>
             <div
                 ref={ridePopUpPanelRef}

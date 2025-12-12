@@ -52,8 +52,15 @@ const rideSchema = new mongoose.Schema({
         select: false,
         required: true,
     },
+    earning: {
+    captainShare: { type: Number, default: 0 },     // Captain earning after commission
+    platformCommission: { type: Number, default: 0 } // Commission amount for the platform
+},
+
+},{
+    timestamps: true   // ⭐ FIX
 })
 
-const Ride = mongoose.model('ride', rideSchema);
+const Ride = mongoose.model('Ride', rideSchema);
 
 export default Ride;
