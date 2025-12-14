@@ -9,10 +9,10 @@ export default function RideHistory() {
   useEffect(() => {
     async function fetchRides() {
       try {
-               const res = await axios.get(
+        const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/users/ride-history`,
           {
-                      withCredentials: true,
+            withCredentials: true,
           }
         );
         setRides(res.data.data);

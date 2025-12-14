@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { logout as storeLogout } from "../store/authSlice";
 import axios from "axios";
 import { authService } from "../service/authService";
-import { logout as storeUserLogout } from '../store/authSlice'
+import { logout as storeUserLogout } from "../store/authSlice";
 export default function Profile() {
   const user = useSelector((state) => state.auth.userData);
   const navigate = useNavigate();
@@ -16,24 +16,23 @@ export default function Profile() {
   const cardHover = { scale: 1.02 };
 
   async function logout() {
-          try {
-              const res = await authService.logOut();
-              console.log(`res for logout`,res)
-              if (res.status === 200) {
-                  dispatch(storeUserLogout())
-                  console.log('logout is successfull');
-                  localStorage.removeItem('accessToken')
-                  localStorage.removeItem('userAuth')
-                  navigate('/login')
-              }
-          } catch (error) {
-              console.log(error)
-          }
+    try {
+      const res = await authService.logOut();
+      console.log(`res for logout`, res);
+      if (res.status === 200) {
+        dispatch(storeUserLogout());
+        console.log("logout is successfull");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userAuth");
+        navigate("/login");
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#f9fafb]">
-
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-white shadow-sm">
         <motion.i
@@ -75,7 +74,6 @@ export default function Profile() {
 
         {/* Action Buttons */}
         <div className="mt-6 space-y-4">
-
           {[
             {
               label: "Edit Profile",
@@ -123,7 +121,6 @@ export default function Profile() {
               ></motion.i>
             </motion.div>
           ))}
-
         </div>
       </div>
     </div>

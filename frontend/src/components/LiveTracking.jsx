@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const LiveTracking = ({onLocationUpdate}) => {
+const LiveTracking = ({ onLocationUpdate }) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const [currentPos, setCurrentPos] = useState(null);
@@ -39,8 +39,8 @@ const LiveTracking = ({onLocationUpdate}) => {
         const newPos = [latitude, longitude];
         setCurrentPos(newPos);
         onLocationUpdate({
-          lat:newPos[0],
-          lng:newPos[1]
+          lat: newPos[0],
+          lng: newPos[1],
         });
         // Marker handling
         if (!markerRef.current) {
@@ -61,9 +61,7 @@ const LiveTracking = ({onLocationUpdate}) => {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  return (
-    <div id="map" className="w-full h-full"></div>
-  );
+  return <div id="map" className="w-full h-full"></div>;
 };
 
 export default LiveTracking;

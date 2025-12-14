@@ -25,7 +25,6 @@ export default function CaptainRideHistory() {
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
-
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-white shadow-sm">
         <motion.i
@@ -51,7 +50,6 @@ export default function CaptainRideHistory() {
                 whileTap={{ scale: 0.97 }}
                 className="bg-white p-4 rounded-xl shadow-sm border border-gray-200"
               >
-
                 <div className="flex justify-between mb-2">
                   <h2 className="text-lg font-semibold text-gray-800">
                     ₹ {ride.earning?.captainShare || ride.fare}

@@ -8,7 +8,7 @@ import { setUser } from "../store/authSlice";
 export default function EditProfile() {
   const user = useSelector((state) => state.auth.userData);
   const navigate = useNavigate();
-const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     username: user?.username || "",
     email: user?.email || "",
@@ -19,40 +19,39 @@ const dispatch = useDispatch()
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
- 
-const saveHandler = async () => {
-  try {
-    const res = await axios.put(
-      `${import.meta.env.VITE_BASE_URL}/users/update-profile`,
-      form,
-      {
-        withCredentials: true,
-      }
-    );
+  const saveHandler = async () => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/users/update-profile`,
+        form,
+        {
+          withCredentials: true,
+        }
+      );
 
-    console.log("Updated User:", res.data.data);
+      console.log("Updated User:", res.data.data);
 
-    // Update Redux Store
-    dispatch(setUser(res.data.data));
+      // Update Redux Store
+      dispatch(setUser(res.data.data));
 
-    // Optional: Show success alert
-    alert("Profile updated successfully!");
+      // Optional: Show success alert
+      // alert("Profile updated successfully!");
+      console.log("Profile updated successfully!");
 
-    // Redirect
-    navigate("/profile");
+      // Redirect
+      navigate("/profile");
+    } catch (error) {
+      console.log("Profile update error:", error);
 
-  } catch (error) {
-    console.log("Profile update error:", error);
-
-    if (error.response?.data?.message)
-      alert(error.response.data.message);
-    else
-      alert("Something went wrong while updating your profile.");
-  }
-};
+      if (error.response?.data?.message)
+        // alert(error.response.data.message);
+        console.log(error.response.data.message);
+      // alert("Something went wrong while updating your profile.");
+      else console.log("Something went wrong while updating your profile.");
+    }
+  };
   return (
     <div className="w-full min-h-screen bg-[#f9fafb] pb-10">
-
       {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -97,10 +96,11 @@ const saveHandler = async () => {
       >
         {/* Input Card */}
         <div className="bg-white p-6 rounded-2xl shadow-sm space-y-5">
-
           {/* Username */}
           <div className="relative">
-            <label className="text-sm font-medium text-gray-600">Username</label>
+            <label className="text-sm font-medium text-gray-600">
+              Username
+            </label>
             <input
               name="username"
               value={form.username}
@@ -137,7 +137,6 @@ const saveHandler = async () => {
 
         {/* Action Buttons */}
         <div className="mt-8 space-y-3">
-          
           {/* Save button */}
           <motion.button
             whileTap={{ scale: 0.96 }}

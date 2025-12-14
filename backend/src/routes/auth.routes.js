@@ -17,43 +17,54 @@
 // | `.env` | Store secrets / config |
 // | `package.json` | Dependencies and scripts |
 
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
-import { body } from 'express-validator'
+import { body } from "express-validator";
 import {
-    registerUser,
-    loginUser,
-    getUserProfile,
-    logoutUser, getCurrentUserData,getUserRideHistory,updateUserProfile
-} from '../controllers/user.controllers.js';
-import { verifyJWT } from '../middlewares/verifyJwt.js';
-import {authorization } from '../middlewares/roleAuth.js';
-router.route('/register')
-    .post(
-        [body('username').notEmpty().withMessage('Name is required'),
-        body('phone').notEmpty().withMessage('Phone number is required'),
-        body('email').isEmail().withMessage('Valid email is required'),
-        body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-        ],
-        registerUser
-    );
+  registerUser,
+  loginUser,
+  getUserProfile,
+  logoutUser,
+  getCurrentUserData,
+  getUserRideHistory,
+  updateUserProfile,
+} from "../controllers/user.controllers.js";
+import { verifyJWT } from "../middlewares/verifyJwt.js";
+import { authorization } from "../middlewares/roleAuth.js";
+router
+  .route("/register")
+  .post(
+    [
+      body("username").notEmpty().withMessage("Name is required"),
+      body("phone").notEmpty().withMessage("Phone number is required"),
+      body("email").isEmail().withMessage("Valid email is required"),
+      body("password")
+        .isLength({ min: 6 })
+        .withMessage("Password must be at least 6 characters long"),
+    ],
+    registerUser
+  );
 
-router.route('/login').post(
-    [body('email').isEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required'),],
+router
+  .route("/login")
+  .post(
+    [
+      body("email").isEmail().withMessage("Valid email is required"),
+      body("password").notEmpty().withMessage("Password is required"),
+    ],
     loginUser
-)
+  );
 
-router.route('/profile').get(verifyJWT, getUserProfile);
+router.route("/profile").get(verifyJWT, getUserProfile);
 
-router.route('/logout').get(verifyJWT, logoutUser);
+router.route("/logout").get(verifyJWT, logoutUser);
 
-router.route('/getCurrentUser').get(verifyJWT, getCurrentUserData)
+router.route("/getCurrentUser").get(verifyJWT, getCurrentUserData);
 
-router.route("/ride-history").get(verifyJWT,getUserRideHistory);
+router.route("/ride-history").get(verifyJWT, getUserRideHistory);
 
-router.route(  "/update-profile").put( verifyJWT, updateUserProfile)
+router.route("/update-profile").put(verifyJWT, updateUserProfile);
 
 export default router;

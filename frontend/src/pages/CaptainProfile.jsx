@@ -3,34 +3,35 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { captainService } from "../service/captainService";
-import {logout as storeCaptainLogout, setEarnings} from '../store/captainAuthSlice.js';
+import {
+  logout as storeCaptainLogout,
+  setEarnings,
+} from "../store/captainAuthSlice.js";
 import { useDispatch } from "react-redux";
 export default function CaptainProfile() {
   const captain = useSelector((state) => state.captain.captainData);
   const earnings = useSelector((state) => state.captain.earnings);
   const navigate = useNavigate();
-const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const cardTap = { scale: 0.97 };
   const cardHover = { scale: 1.02 };
 
-     async function logout() {
-        try {
-            const res = await captainService.logOut();
-            console.log(res)
-            if (res.status === 200) {
-                dispatch(storeCaptainLogout())
-                localStorage.removeItem('capAuth')
-                navigate('/login')
-            }
-        } catch (error) {
-            console.log(error)
-        }
+  async function logout() {
+    try {
+      const res = await captainService.logOut();
+      console.log(res);
+      if (res.status === 200) {
+        dispatch(storeCaptainLogout());
+        localStorage.removeItem("capAuth");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
     }
-
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#f9fafb]">
-
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-white shadow-sm">
         <motion.i
@@ -44,7 +45,6 @@ const dispatch=useDispatch()
       </div>
 
       <div className="px-5 py-6">
-
         {/* Profile Card */}
         <motion.div
           whileTap={cardTap}
@@ -83,7 +83,6 @@ const dispatch=useDispatch()
           </h3>
 
           <div className="grid grid-cols-2 gap-4">
-            
             <div className="bg-green-100 p-4 rounded-xl shadow-sm text-center">
               <p className="text-gray-600 text-sm">Today</p>
               <h2 className="text-2xl font-bold text-gray-800">

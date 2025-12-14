@@ -3,12 +3,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 
-const CaptainLiveTracking = ({ 
-  onLocationUpdate, 
-  pickupCoords, 
-  destinationCoords 
+const CaptainLiveTracking = ({
+  onLocationUpdate,
+  pickupCoords,
+  destinationCoords,
 }) => {
-
   const mapRef = useRef(null);
   const captainMarkerRef = useRef(null);
   const routeRef = useRef(null);
@@ -16,12 +15,12 @@ const CaptainLiveTracking = ({
   // Custom icons
   const pickupIcon = new L.Icon({
     iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png",
-    iconSize: [35, 35]
+    iconSize: [35, 35],
   });
 
   const destinationIcon = new L.Icon({
     iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png",
-    iconSize: [35, 35]
+    iconSize: [35, 35],
   });
 
   // Initialize Map
@@ -34,7 +33,7 @@ const CaptainLiveTracking = ({
     });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 20
+      maxZoom: 20,
     }).addTo(mapRef.current);
 
     setTimeout(() => mapRef.current.invalidateSize(), 200);
@@ -93,7 +92,7 @@ const CaptainLiveTracking = ({
       addWaypoints: false,
       routeWhileDragging: false,
       createMarker: () => null,
-      lineOptions: { styles: [{ color: "#007bff", weight: 5 }] }
+      lineOptions: { styles: [{ color: "#007bff", weight: 5 }] },
     }).addTo(mapRef.current);
 
     // Hide Elementor panel

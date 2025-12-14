@@ -9,7 +9,7 @@ import { setCaptain } from "../store/captainAuthSlice";
 export default function CaptainEditProfile() {
   const captain = useSelector((state) => state.captain.captainData);
   const navigate = useNavigate();
-const dispatch= useDispatch()
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     fullName: captain?.fullName || "",
     email: captain?.email || "",
@@ -26,7 +26,7 @@ const dispatch= useDispatch()
 
   async function saveHandler() {
     try {
-        console.log(form);
+      console.log(form);
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/captains/update-profile`,
         form,
@@ -34,17 +34,19 @@ const dispatch= useDispatch()
       );
 
       if (res.status === 200) {
-         // UPDATE REDUX STORE
-         console.log('res',res.data.data);
-         const updatedCaptain =res.data.data
-      dispatch(setCaptain(updatedCaptain));
+        // UPDATE REDUX STORE
+        console.log("res", res.data.data);
+        const updatedCaptain = res.data.data;
+        dispatch(setCaptain(updatedCaptain));
 
-      alert("Profile Updated Successfully");
+        // alert("Profile Updated Successfully");
+        console.log("Profile Updated Successfully");
         navigate("/captain-profile");
       }
     } catch (error) {
       console.error("Update failed:", error);
-      alert("Profile update failed. Try again.");
+      // alert("Profile update failed. Try again.");
+      console.log("Profile update failed. Try again.");
     }
   }
 
@@ -52,7 +54,6 @@ const dispatch= useDispatch()
 
   return (
     <div className="w-full min-h-screen bg-[#f9fafb]">
-      
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-white shadow-sm">
         <motion.i
@@ -67,7 +68,6 @@ const dispatch= useDispatch()
       </div>
 
       <div className="p-5">
-
         {/* Profile Avatar */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -111,7 +111,9 @@ const dispatch= useDispatch()
           ))}
 
           {/* Vehicle Details Section */}
-          <h2 className="mt-4 text-lg font-semibold text-gray-800">Vehicle Info</h2>
+          <h2 className="mt-4 text-lg font-semibold text-gray-800">
+            Vehicle Info
+          </h2>
 
           {[
             { label: "Vehicle Type", name: "vehicleType" },
@@ -148,7 +150,6 @@ const dispatch= useDispatch()
         >
           Save Changes
         </motion.button>
-
       </div>
     </div>
   );

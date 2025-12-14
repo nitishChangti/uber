@@ -12,8 +12,7 @@
 // import { sendMessage } from "../store/socketSlice";
 // import axios from 'axios';
 // const CaptainRiding = () => {
-  
-  
+
 //   const [finishRidePanel, setFinishRidePanel] = useState(false)
 //   const finishRidePanelRef = useRef(null)
 //   const location = useLocation();
@@ -50,13 +49,12 @@
 //     mapRef.current.invalidateSize();
 //   }, 300);
 //   }, []);
-  
+
 //   useEffect(() => {
 //   if (pickupCoords && mapRef.current) {
 //     mapRef.current.setView([pickupCoords.lat, pickupCoords.lng], 15);
 //   }
 // }, [pickupCoords]);
-
 
 //    // ⭐ Helper to update captain marker
 //   const updateCaptainMarker = (coords) => {
@@ -108,7 +106,6 @@
 
 // }, [initialCaptainLocation, hasStarted, pickupCoords, destinationCoords]);
 
-  
 //   // ⭐ Captain Live GPS Tracking
 // useEffect(() => {
 //   if (!rideData || !captain) return;
@@ -117,7 +114,7 @@
 //     (pos) => {
 //       const { latitude, longitude } = pos.coords;
 //       const coords = [latitude, longitude];
-     
+
 //       updateCaptainMarker(coords);
 
 //       dispatch(
@@ -136,8 +133,6 @@
 //   return () => navigator.geolocation.clearWatch(watchId);
 // }, [rideData, captain]);
 
-
-
 // console.log(initialCaptainLocation);
 //     useGSAP(() => {
 //         if (finishRidePanel) {
@@ -151,7 +146,6 @@
 //             })
 //         }
 //     }, [finishRidePanel])
-
 
 //     return (
 //         <div className='w-full h-screen'>
@@ -220,19 +214,16 @@
 // import { useDispatch, useSelector } from "react-redux";
 // import { sendMessage } from "../store/socketSlice";
 
-
 // // ⭐ Fix Leaflet marker images
 // import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 // import markerIcon from "leaflet/dist/images/marker-icon.png";
 // import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
 
 // L.Icon.Default.mergeOptions({
 //   iconRetinaUrl: markerIcon2x,
 //   iconUrl: markerIcon,
 //   shadowUrl: markerShadow,
 // });
-
 
 // // ⭐ Distance function
 // function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -258,7 +249,6 @@
 //   iconAnchor: [12, 41],
 //   popupAnchor: [1, -34],
 // });
-
 
 // const CaptainRiding = () => {
 //   const [finishRidePanel, setFinishRidePanel] = useState(false);
@@ -410,7 +400,6 @@
 
 // // ⭐ Captain Live GPS Tracking with Full Debugging
 
-
 // useEffect(() => {
 //   if (!rideData || !captain) {
 //     alert(`DEBUG: rideData ${rideData} or captain missing ${captain}`);
@@ -489,8 +478,6 @@
 //     navigator.geolocation.clearWatch(watchId);
 //   };
 // }, [rideData, captain]);
-
-
 
 //   // ⭐ Update remaining distance EVERY 10 seconds
 //   useEffect(() => {
@@ -573,7 +560,6 @@
 
 // export default CaptainRiding;
 
-
 import React, { useState, useEffect, useRef } from "react";
 import { logo } from "../assets";
 import gsap from "gsap";
@@ -586,19 +572,16 @@ import "leaflet-routing-machine";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessage } from "../store/socketSlice";
 
-
 // ⭐ Fix Leaflet marker images
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
-
 
 // ⭐ Distance function
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -608,8 +591,8 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
 
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) ** 2;
 
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -624,7 +607,6 @@ const destinationIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
-
 
 const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
@@ -665,32 +647,32 @@ const CaptainRiding = () => {
   }, []);
 
   // ⭐ Place initial captain marker (VERY IMPORTANT)
-useEffect(() => {
-  if (!captainInitialLocation || !mapRef.current) return;
+  useEffect(() => {
+    if (!captainInitialLocation || !mapRef.current) return;
 
-  // Create marker once
-  if (!captainMarkerRef.current) {
-    captainMarkerRef.current = L.marker([
-      captainInitialLocation.lat,
-      captainInitialLocation.lng
-    ]).addTo(mapRef.current);
-  }
+    // Create marker once
+    if (!captainMarkerRef.current) {
+      captainMarkerRef.current = L.marker([
+        captainInitialLocation.lat,
+        captainInitialLocation.lng,
+      ]).addTo(mapRef.current);
+    }
 
-  // Center map on captain initial position
-  mapRef.current.setView(
-    [captainInitialLocation.lat, captainInitialLocation.lng],
-    17
-  );
-}, [captainInitialLocation]);
+    // Center map on captain initial position
+    mapRef.current.setView(
+      [captainInitialLocation.lat, captainInitialLocation.lng],
+      17
+    );
+  }, [captainInitialLocation]);
 
-// ⭐ Add destination marker
-useEffect(() => {
-  if (!destinationCoords || !mapRef.current) return;
+  // ⭐ Add destination marker
+  useEffect(() => {
+    if (!destinationCoords || !mapRef.current) return;
 
-  L.marker([destinationCoords.lat, destinationCoords.lng], {
-    icon: destinationIcon,
-  }).addTo(mapRef.current);
-}, [destinationCoords]);
+    L.marker([destinationCoords.lat, destinationCoords.lng], {
+      icon: destinationIcon,
+    }).addTo(mapRef.current);
+  }, [destinationCoords]);
 
   // ⭐ Draw route helper
   // const drawRoute = (from, to) => {
@@ -714,34 +696,30 @@ useEffect(() => {
   //   const panels = document.getElementsByClassName("leaflet-routing-container");
   //   if (panels.length > 0) panels[0].style.display = "none";
   // };
-const drawRoute = (from, to) => {
-  if (!from || !to || !mapRef.current) return;
+  const drawRoute = (from, to) => {
+    if (!from || !to || !mapRef.current) return;
 
-  // Remove old route if exists
-  if (routeRef.current) {
-    try {
-      mapRef.current.removeControl(routeRef.current);
-    } catch (_) {}
-  }
+    // Remove old route if exists
+    if (routeRef.current) {
+      try {
+        mapRef.current.removeControl(routeRef.current);
+      } catch (_) {}
+    }
 
-  routeRef.current = L.Routing.control({
-    waypoints: [
-      L.latLng(from.lat, from.lng),
-      L.latLng(to.lat, to.lng)
-    ],
-    addWaypoints: false,
-    draggableWaypoints: false,
-    routeWhileDragging: false,
-    show: false,
-    lineOptions: { styles: [{ color: "#007bff", weight: 5 }] },
-    createMarker: () => null
-  }).addTo(mapRef.current);
+    routeRef.current = L.Routing.control({
+      waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
+      addWaypoints: false,
+      draggableWaypoints: false,
+      routeWhileDragging: false,
+      show: false,
+      lineOptions: { styles: [{ color: "#007bff", weight: 5 }] },
+      createMarker: () => null,
+    }).addTo(mapRef.current);
 
-  // Hide info panel
-  const panels = document.getElementsByClassName("leaflet-routing-container");
-  if (panels.length > 0) panels[0].style.display = "none";
-};
-
+    // Hide info panel
+    const panels = document.getElementsByClassName("leaflet-routing-container");
+    if (panels.length > 0) panels[0].style.display = "none";
+  };
 
   // ⭐ Draw route when screen loads
   useEffect(() => {
@@ -802,99 +780,122 @@ const drawRoute = (from, to) => {
   //   return () => navigator.geolocation.clearWatch(watchId);
   // }, [rideData, captain]);
 
-// ⭐ Captain Live GPS Tracking with Full Debugging
+  // ⭐ Captain Live GPS Tracking with Full Debugging
 
+  useEffect(() => {
+    if (!rideData || !captain) {
+      // alert(`DEBUG: rideData ${rideData} or captain missing ${captain}`);
+      console.log(`DEBUG: rideData ${rideData} or captain missing ${captain}`);
+      return;
+    }
 
-useEffect(() => {
-  if (!rideData || !captain) {
-    alert(`DEBUG: rideData ${rideData} or captain missing ${captain}`);
-    return;
-  }
+    // alert("DEBUG: watchPosition STARTED");
+    console.log("DEBUG: watchPosition STARTED");
 
-  alert("DEBUG: watchPosition STARTED");
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
 
-  const watchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-
-      // 🔥 1. Show new GPS coordinates every time they update
-      alert(
-        "GPS UPDATE RECEIVED:\n" +
-        "Lat: " + latitude + "\n" +
-        "Lng: " + longitude + "\n" +
-        "Timestamp: " + new Date().toLocaleTimeString()
-      );
-
-      // 🔥 2. Check if coordinates are same as before
-      if (captainLiveLocation) {
-        const same =
-          captainLiveLocation.lat === latitude &&
-          captainLiveLocation.lng === longitude;
-
-        alert(
-          same
-            ? "⚠️ Coordinates SAME as last update (GPS not changing)"
-            : "✅ Coordinates CHANGED (GPS movement detected!)"
+        // 🔥 1. Show new GPS coordinates every time they update
+        // alert(
+        //   "GPS UPDATE RECEIVED:\n" +
+        //   "Lat: " + latitude + "\n" +
+        //   "Lng: " + longitude + "\n" +
+        //   "Timestamp: " + new Date().toLocaleTimeString()
+        // );
+        console.log(
+          "GPS UPDATE RECEIVED:\n" +
+            "Lat: " +
+            latitude +
+            "\n" +
+            "Lng: " +
+            longitude +
+            "\n" +
+            "Timestamp: " +
+            new Date().toLocaleTimeString()
         );
-      }
+        // 🔥 2. Check if coordinates are same as before
+        if (captainLiveLocation) {
+          const same =
+            captainLiveLocation.lat === latitude &&
+            captainLiveLocation.lng === longitude;
 
-      // Update state
-      setCaptainLiveLocation({ lat: latitude, lng: longitude });
+          //   alert(
+          //     same
+          //       ? "⚠️ Coordinates SAME as last update (GPS not changing)"
+          //       : "✅ Coordinates CHANGED (GPS movement detected!)"
+          //   );
+          // }
+          console.log(
+            same
+              ? "⚠️ Coordinates SAME as last update (GPS not changing)"
+              : "✅ Coordinates CHANGED (GPS movement detected!)"
+          );
+        }
 
-      // 🔥 3. Debug marker creation/update
-      if (!captainMarkerRef.current) {
-        alert("DEBUG: Creating initial captain marker");
-        captainMarkerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
-      } else {
-        alert("DEBUG: Updating captain marker position");
-        captainMarkerRef.current.setLatLng([latitude, longitude]);
-      }
+        // Update state
+        setCaptainLiveLocation({ lat: latitude, lng: longitude });
 
-      // 🔥 4. Debug centering
-      alert("DEBUG: Centering map on captain");
+        // 🔥 3. Debug marker creation/update
+        if (!captainMarkerRef.current) {
+          // alert("DEBUG: Creating initial captain marker");
+          console.log("DEBUG: Creating initial captain marker");
+          captainMarkerRef.current = L.marker([latitude, longitude]).addTo(
+            mapRef.current
+          );
+        } else {
+          // alert("DEBUG: Updating captain marker position");
+          console.log("DEBUG: Updating captain marker position");
+          captainMarkerRef.current.setLatLng([latitude, longitude]);
+        }
 
-      mapRef.current.setView([latitude, longitude]);
+        // 🔥 4. Debug centering
+        // alert("DEBUG: Centering map on captain");
+        console.log("DEBUG: Centering map on captain");
 
-      // 🔥 5. Debug dispatch to backend
-      alert("DEBUG: Dispatching socket location update");
+        mapRef.current.setView([latitude, longitude]);
 
-      dispatch(
-        sendMessage("captain-location-update", {
-          rideId: rideData._id,
-          captainId: captain._id,
-          lat: latitude,
-          lng: longitude,
-        })
-      );
-    },
+        // 🔥 5. Debug dispatch to backend
+        // alert("DEBUG: Dispatching socket location update");
+        console.log("DEBUG: Dispatching socket location update");
 
-    // Error callback
-    (err) => {
-      alert("GPS ERROR:\n" + JSON.stringify(err));
-      console.log("GPS Error:", err);
-    },
+        dispatch(
+          sendMessage("captain-location-update", {
+            rideId: rideData._id,
+            captainId: captain._id,
+            lat: latitude,
+            lng: longitude,
+          })
+        );
+      },
 
-    // High accuracy settings
-    { enableHighAccuracy: true }
-  );
+      // Error callback
+      (err) => {
+        // alert("GPS ERROR:\n" + JSON.stringify(err));
+        console.log("GPS Error:", err);
+      },
 
-  return () => {
-    alert("DEBUG: watchPosition STOPPED");
-    navigator.geolocation.clearWatch(watchId);
-  };
-}, [rideData, captain]);
+      // High accuracy settings
+      { enableHighAccuracy: true }
+    );
 
-// ⭐ Re-draw route whenever captain moves
-useEffect(() => {
-  if (!captainLiveLocation || !destinationCoords) return;
+    return () => {
+      // alert("DEBUG: watchPosition STOPPED");
+      console.log("DEBUG: watchPosition STOPPED");
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [rideData, captain]);
 
-  // Redraw route from new captain location to destination
-  drawRoute(
-    { lat: captainLiveLocation.lat, lng: captainLiveLocation.lng },
-    { lat: destinationCoords.lat, lng: destinationCoords.lng }
-  );
-}, [captainLiveLocation, destinationCoords]);
+  // ⭐ Re-draw route whenever captain moves
+  useEffect(() => {
+    if (!captainLiveLocation || !destinationCoords) return;
 
+    // Redraw route from new captain location to destination
+    drawRoute(
+      { lat: captainLiveLocation.lat, lng: captainLiveLocation.lng },
+      { lat: destinationCoords.lat, lng: destinationCoords.lng }
+    );
+  }, [captainLiveLocation, destinationCoords]);
 
   // ⭐ Update remaining distance EVERY 10 seconds
   useEffect(() => {
@@ -969,7 +970,10 @@ useEffect(() => {
         >
           <i className="ri-arrow-down-s-line"></i>
         </h1>
-        <FinishRide rideData={rideData} setFinishRidePanel={setFinishRidePanel} />
+        <FinishRide
+          rideData={rideData}
+          setFinishRidePanel={setFinishRidePanel}
+        />
       </div>
     </div>
   );

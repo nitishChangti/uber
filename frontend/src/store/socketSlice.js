@@ -21,32 +21,33 @@ const socketSlice = createSlice({
 export const { setConnected, setDisconnected } = socketSlice.actions;
 
 // ✅ Connect to Socket.IO server
-export const connectSocket = (url = `${import.meta.env.VITE_BASE_URL}`, token
-) => (dispatch) => {
-  if (!socket) {
-    console.log("🧠 Initializing socket...");
-    socket = io(url, {
-      transports: ["websocket", "polling"],
-      withCredentials: true,
-      auth: { token },
-    });
+export const connectSocket =
+  (url = `${import.meta.env.VITE_BASE_URL}`, token) =>
+  (dispatch) => {
+    if (!socket) {
+      console.log("🧠 Initializing socket...");
+      socket = io(url, {
+        transports: ["websocket", "polling"],
+        withCredentials: true,
+        auth: { token },
+      });
 
-    socket.on("connect", () => {
-      alert('Socket connected');
-      console.log("✅ Connected to Socket.IO:", socket.id);
-      dispatch(setConnected());
-    });
+      socket.on("connect", () => {
+        alert("Socket connected");
+        console.log("✅ Connected to Socket.IO:", socket.id);
+        dispatch(setConnected());
+      });
 
-    socket.on("disconnect", (reason) => {
-      console.log("❌ Disconnected from server:", reason);
-      dispatch(setDisconnected());
-    });
+      socket.on("disconnect", (reason) => {
+        console.log("❌ Disconnected from server:", reason);
+        dispatch(setDisconnected());
+      });
 
-    socket.on("connect_error", (err) => {
-      console.error("⚠️ Socket connection error:", err.message);
-    });
-  }
-};
+      socket.on("connect_error", (err) => {
+        console.error("⚠️ Socket connection error:", err.message);
+      });
+    }
+  };
 
 // ✅ Disconnect Socket.IO
 export const disconnectSocket = () => (dispatch) => {
@@ -70,10 +71,10 @@ export const sendMessage = (eventName, message) => () => {
 // ✅ Listen for messages from server
 export const receiveMessage = (eventName, callback) => () => {
   if (socket) {
-    console.log('socket of receive ',socket,eventName,callback);
+    console.log("socket of receive ", socket, eventName, callback);
     // socket.off(eventName); // prevent duplicate listeners
-      // remove same callback (prevents duplicates)
-  socket.off(eventName, callback);
+    // remove same callback (prevents duplicates)
+    socket.off(eventName, callback);
 
     socket.on(eventName, callback);
   } else {
