@@ -33,7 +33,7 @@ export const connectSocket =
       });
 
       socket.on("connect", () => {
-        alert("Socket connected");
+        // alert("Socket connected");
         console.log("✅ Connected to Socket.IO:", socket.id);
         dispatch(setConnected());
       });

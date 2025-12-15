@@ -99,7 +99,21 @@ const App = () => {
 
   if (loading) {
     console.log("loading...");
-    return <h1>Loading...</h1>; // ✅ Prevents early redirects
+    return (
+         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950">
+      {/* Pulse dots */}
+      <div className="flex gap-3 mb-4">
+        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse" />
+        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse [animation-delay:200ms]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse [animation-delay:400ms]" />
+      </div>
+
+      {/* Status text */}
+      <p className="text-sm tracking-wide text-slate-400">
+        Establishing secure connection
+      </p>
+    </div>
+    )
   }
 
   return (
