@@ -1,126 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { homepage_img, logo } from "./assets/index";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { login, logout, setUser } from "./store/authSlice";
-import {
-  login as capLogin,
-  logout as capLogout,
-} from "./store/captainAuthSlice";
-import { useNavigate } from "react-router-dom";
-import { authService } from "./service/authService";
-import { captainService } from "./service/captainService";
 import { Outlet } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser, logout, setLoading } from "./store/authSlice";
+import { authService } from "./service/authService";
 import { connectSocket, disconnectSocket } from "./store/socketSlice";
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const [bootstrapped, setBootstrapped] = useState(false);
 
   useEffect(() => {
-    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-    console.log("userAuth in app.jsx", userAuth);
-    const capAuth = JSON.parse(localStorage.getItem("capAuth"));
-    console.log("capAuth in app.jsx", capAuth);
-    const checkAuth = async () => {
+    const bootstrapAuth = async () => {
       try {
-        if (userAuth && !capAuth) {
+        const token = JSON.parse(localStorage.getItem("accessToken"));
+        const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+
+        if (token && userAuth) {
           const res = await authService.getCurrentUser();
-          console.log(" res from get current user", res, res.status);
-          if (res.status === 200) {
-            console.log("res.data.data.user", res.data.data.user);
-            const user = res.data.data.user;
-            console.log("user in app.jsx", user);
-            if (user) {
-              console.log("user is ", user);
-              // dispatch(login(user));
-              dispatch(setUser(user));
-              localStorage.setItem("userAuth", JSON.stringify(true));
-              // Initialize socket connection
-              // Connect socket with user token
-              console.log("connect socket before start");
-              dispatch(connectSocket(`${import.meta.env.VITE_BASE_URL}`));
-              console.log("connect socket is done");
-            } else {
-              console.log("logout called");
-              dispatch(logout());
-              // localStorage.removeItem("userAuth")
-              dispatch(disconnectSocket());
-            }
-          } else if (res.status === 401) return dispatch(logout());
-          dispatch(logout());
-          // localStorage.removeItem("userAuth")
-          // dispatch(disconnectSocket());
-        } else if (capAuth && !userAuth) {
-          // console.log('first')
-          const res = await captainService.getCurrentCap();
-          console.log(" res from get current cap", res);
-          if (res.status === 200) {
-            const user = res.data.data.user;
-            if (user) {
-              dispatch(capLogin(user));
-              // localStorage.setItem('capAuth', JSON.stringify(true));
-              // Connect socket with captain token
-              dispatch(connectSocket(`${import.meta.env.VITE_BASE_URL}`));
-            } else {
-              dispatch(capLogout());
-              // localStorage.removeItem("capAuth")
-              dispatch(disconnectSocket());
-            }
+          if (res?.status === 200 && res?.data?.data?.user) {
+            dispatch(setUser(res.data.data.user));
+            dispatch(connectSocket(import.meta.env.VITE_BASE_URL));
           } else {
-            if (res.status === 401) return dispatch(capLogout());
-            dispatch(capLogout());
-            // localStorage.removeItem("capAuth")
+            dispatch(logout());
             dispatch(disconnectSocket());
           }
+        } else {
+          dispatch(logout());
+          dispatch(disconnectSocket());
         }
-      } catch (error) {
-        console.log(error);
-        console.log("Auth check error:", error);
+      } catch (err) {
+        console.error("Auth bootstrap failed:", err);
         dispatch(logout());
-        // localStorage.removeItem("userAuth")
-        // localStorage.removeItem("capAuth")
-        dispatch(capLogout());
         dispatch(disconnectSocket());
       } finally {
-        setLoading(false);
+        setBootstrapped(true);
       }
     };
 
-    checkAuth();
+    bootstrapAuth();
   }, [dispatch]);
 
-  // return !loading ? (
-  //   <main>
-  //     <Outlet />
-  //   </main>
-  // )
-  //   : null;
-
-  if (loading) {
-    console.log("loading...");
+  if (!bootstrapped) {
     return (
-         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950">
-      {/* Pulse dots */}
-      <div className="flex gap-3 mb-4">
-        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse" />
-        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse [animation-delay:200ms]" />
-        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse [animation-delay:400ms]" />
+      <div className="fixed inset-0 flex items-center justify-center">
+        Bootstrapping session...
       </div>
-
-      {/* Status text */}
-      <p className="text-sm tracking-wide text-slate-400">
-        Establishing secure connection
-      </p>
-    </div>
-    )
+    );
   }
 
-  return (
-    <main>
-      <Outlet />
-    </main>
-  );
+  return <Outlet />;
 };
 
 export default App;

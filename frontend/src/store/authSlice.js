@@ -2,34 +2,28 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userData: null,
-  status: null,
-  loading: true, // ✅ added
+  status: false,     // isAuthenticated
+  loading: true,
+  error: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action) => {
+    setUser: (state, action) => {
       state.status = true;
       state.userData = action.payload;
       state.loading = false;
       state.error = null;
       localStorage.setItem("userAuth", JSON.stringify(true));
     },
-    logout: (state, action) => {
-      state.status = false;
-      state.userData = null;
+    login: (state, action) => {
+      state.status = true;
+      state.userData = action.payload;
       state.loading = false;
       state.error = null;
-      // localStorage.removeItem("userAuth")
-    },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-      state.loading = false;
+      localStorage.setItem("userAuth", JSON.stringify(true));
     },
     register: (state, action) => {
       state.status = true;
@@ -38,16 +32,25 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.setItem("userAuth", JSON.stringify(true));
     },
-    setUser: (state, action) => {
-      state.status = true;
-      state.userData = action.payload;
+    logout: (state) => {
+      state.status = false;
+      state.userData = null;
       state.loading = false;
       state.error = null;
+      localStorage.removeItem("userAuth");
+      localStorage.removeItem("accessToken");
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
     },
   },
 });
 
-export const { login, logout, setLoading, setError, register, setUser } =
+export const { setUser, login, register, logout, setLoading, setError } =
   authSlice.actions;
 
 export default authSlice.reducer;

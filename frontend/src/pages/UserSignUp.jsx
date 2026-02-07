@@ -1,60 +1,67 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { authService } from "../service/authService";
-import { useNavigate } from "react-router-dom";
-import { register as userRegisterSlice } from "../store/authSlice.js";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { register as registerUserSlice } from "../store/authSlice";
+import { authService } from "../service/authService";
+
 const UserSignUp = () => {
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
-  const onSubmit = async (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+
+  const onSubmit = async (formData) => {
     try {
-      const response = await authService.register(
-        data.fullName,
-        data.email,
-        data.password,
-        data.phoneNumber
+      const res = await authService.register(
+        formData.fullName,
+        formData.email,
+        formData.password,
+        formData.phoneNumber
       );
-      console.log(response);
-      console.log(response.data.data.createdUser);
-      if (response.status === 201) {
-        const userData = response.data.data.createdUser;
-        dispatch(userRegisterSlice(userData));
-        // alert("User created successfully");
+
+      if (res?.status === 201 && res?.data?.data?.createdUser) {
+        const user = res.data.data.createdUser;
+
+        // ✅ hydrate redux auth state
+        dispatch(registerUserSlice(user));
+
+        // ✅ navigate to home after successful signup
         navigate("/home");
       } else {
-        // alert("User creation failed");
-        console.log("User creation failed");
-        console.log(response.message);
-        // Use setError from react-hook-form to set a form error
-        // Example: setError('email', { type: 'manual', message: 'User creation failed' });
-        setError("root", { type: "manual", message: response.message });
+        setError("root", {
+          type: "manual",
+          message: "User registration failed. Please try again.",
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("root", {
+        type: "manual",
+        message:
+          err?.response?.data?.message ||
+          "Something went wrong while creating your account.",
+      });
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-gray-100 px-4">
-      {/* Uber Logo */}
       <div className="mb-8 w-full max-w-sm">
         <h1 className="text-3xl font-bold text-black mb-6">Uber</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Root-level error from backend */}
+
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {/* Root error */}
           {errors.root && (
             <p className="text-red-500 text-xs mb-4">{errors.root.message}</p>
           )}
 
-          {/* Full Name Input */}
+          {/* Full Name */}
           <label className="block mb-2 text-sm font-medium text-gray-700">
             What's your name
           </label>
@@ -70,7 +77,7 @@ const UserSignUp = () => {
             </p>
           )}
 
-          {/* Phone Input */}
+          {/* Phone */}
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Phone Number
           </label>
@@ -92,7 +99,7 @@ const UserSignUp = () => {
             </p>
           )}
 
-          {/* Email Input */}
+          {/* Email */}
           <label className="block mb-2 text-sm font-medium text-gray-700">
             What's your email
           </label>
@@ -112,7 +119,7 @@ const UserSignUp = () => {
             <p className="text-red-500 text-xs mb-4">{errors.email.message}</p>
           )}
 
-          {/* Password Input */}
+          {/* Password */}
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Enter Password
           </label>
@@ -134,30 +141,28 @@ const UserSignUp = () => {
             </p>
           )}
 
-          {/* Sign Up Button */}
+          {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded-md font-semibold text-base hover:opacity-90 mt-5"
+            disabled={isSubmitting}
+            className="w-full bg-black text-white py-3 rounded-md font-semibold text-base hover:opacity-90 mt-5 disabled:opacity-50"
           >
-            Sign Up
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
-        {/* Link */}
+        {/* Login link */}
         <p className="text-sm text-center text-gray-700 mt-4">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-blue-600 font-medium hover:underline"
-          >
+          <Link to="/login" className="text-blue-600 font-medium hover:underline">
             Login here
           </Link>
         </p>
 
-        {/* Consent Text */}
+        {/* Consent */}
         <p className="text-xs text-gray-500 mt-6">
-          By proceeding, you consent to get calls, WhatsApp or SMS messages,
-          including by automated means, from Uber and its affiliates to the
+          By proceeding, you consent to receive calls, WhatsApp, or SMS messages,
+          including automated messages, from Uber and its affiliates to the
           number provided.
         </p>
       </div>
