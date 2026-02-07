@@ -4,6 +4,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiRes.js";
 import { validationResult } from "express-validator";
 import BlackListToken from "../models/blackListToken.models.js";
+
+
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
