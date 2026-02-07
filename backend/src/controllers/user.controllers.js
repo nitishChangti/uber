@@ -176,11 +176,14 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
 
   // 3️⃣ Cookie options (secure in prod, not in local dev)
-  const options = {
+  // const options = {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  // };
+ const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
   };
-
   console.log("finally user logged out");
   return res
     .status(200)
